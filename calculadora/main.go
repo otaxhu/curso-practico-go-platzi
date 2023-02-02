@@ -5,50 +5,54 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Escriba el primer operador")
+type calc struct{}
 
-	// Lee el imput del usuario
-	scanner.Scan()
-
-	// Convierte el imput a un string y lo guarda en la variable "operacion"
-	operador1string := scanner.Text()
-
-	fmt.Println("Ingrese el tipo de operacion")
-
-	scanner.Scan()
-
-	operador := scanner.Text()
-
-	fmt.Println("Ingrese el segundo operador")
-
-	scanner.Scan()
-
-	operador2string := scanner.Text()
-
-	//fmt.Println(operador1string, operador, operador2string)
-
-	operador1, err1 := strconv.Atoi(operador1string)
-
-	operador2, err2 := strconv.Atoi(operador2string)
-
+func (calc) operate(entrada, operador string) (int, error) {
+	entradaLimpia := strings.Split(entrada, operador)
+	operador1, err1 := parsear(entradaLimpia[0])
+	operador2, err2 := parsear(entradaLimpia[1])
 	if err1 == nil && err2 == nil {
 		switch operador {
 		case "+":
-			fmt.Println(operador1, operador, operador2, "=", operador1+operador2)
+			return operador1 + operador2, nil
 		case "-":
-			fmt.Println(operador1, operador, operador2, "=", operador1-operador2)
+			return operador1 - operador2, nil
 		case "*":
-			fmt.Println(operador1, operador, operador2, "=", operador1*operador2)
+			return operador1 * operador2, nil
 		case "/":
-			fmt.Println(operador1, operador, operador2, "=", operador1/operador2)
+			return operador1 / operador2, nil
 		default:
-			fmt.Println("Operador invalido")
+			return 0, fmt.Errorf("operador invalido")
 		}
 	} else {
-		fmt.Println("Se esperaban numeros enteros")
+		return 0, fmt.Errorf("se esperaba un entero")
+	}
+}
+
+func parsear(entrada string) (int, error) {
+	operador, err := strconv.Atoi(entrada)
+	return operador, err
+}
+
+func escanearEntrada() string {
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	return scanner.Text()
+}
+
+func main() {
+	fmt.Println("Ingrese los valores de la forma: e.g. 2+2 , 2*3 , etc.")
+	input := escanearEntrada()
+	fmt.Println("Ingrese el tipo de operacion de la forma: e.g. + , - , * , /")
+	operador := escanearEntrada()
+	c := calc{}
+	result, err := c.operate(input, operador)
+	if err != nil {
+		fmt.Println(result)
+	} else {
+		fmt.Println(err)
 	}
 }
