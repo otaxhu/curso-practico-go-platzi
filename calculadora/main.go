@@ -50,7 +50,8 @@ func main() {
 	operador := escanearEntrada()
 	c := calc{}
 	result, err := c.operate(input, operador)
-	if err != nil {
+
+	if err == nil {
 		fmt.Println(result)
 	} else {
 		fmt.Println(err)
